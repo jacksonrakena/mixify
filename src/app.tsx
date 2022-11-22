@@ -352,7 +352,7 @@ export function Authorized(props: { id: string; otheruser: string }) {
                 <div style={{ marginLeft: "15px" }}>
                   Your playlist: {a.playlist0.name} &bull; Their playlist:{" "}
                   {a.playlist1.name} <br />
-                  {a.track?.album.name}
+                  {(a as any).track?.album.name}
                 </div>
               </div>
             </div>
