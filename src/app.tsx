@@ -388,6 +388,8 @@ export function App() {
     if (loggedIn) {
       client.getMe().then((d) => {
         console.log("acquired me", d);
+
+        d.fo;
         setMe(d);
       });
     }
@@ -428,7 +430,7 @@ export function App() {
             <div>
               <img
                 style={{ borderRadius: "8px" }}
-                src={me?.images ? me?.images[0].url : ""}
+                src={me?.images ? me?.images[0]?.url : ""}
                 width={"50"}
                 height={"50"}
               />
