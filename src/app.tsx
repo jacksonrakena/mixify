@@ -5,7 +5,8 @@ import SpotifyWebApi from "spotify-web-api-js";
 import "./app.css";
 import { useSpotifyAuth } from "./auth";
 const endpoint = "https://accounts.spotify.com/authorize";
-const redirecturi = "http://localhost:5173/";
+//const redirecturi = "http://localhost:5173/";
+const redirecturi = import.meta.env.VITE_BASE_URL;
 const clientId = "b96e260c2a344a6e86950b8c2076d052";
 const bingus = "12135528270";
 const friendId = "samlxluo";
@@ -143,7 +144,7 @@ export const UserContainer = (props: { id: string }) => {
       >
         <img
           style={{ borderRadius: 50 }}
-          src={user?.images[0].url}
+          src={user?.images![0].url}
           height="40"
           width="40"
         />
@@ -338,6 +339,7 @@ export function Authorized(props: { id: string; otheruser: string }) {
             >
               <div>
                 <img
+                  //@ts-ignore
                   src={a.track?.album.images[0].url}
                   height="50"
                   width="50"
@@ -378,6 +380,12 @@ export function App() {
 
   return (
     <>
+      {!loggedIn && (
+        <>
+          <div>Welcome to Mixify.</div>
+          <button onClick={login}>Login</button>
+        </>
+      )}
       {loggedIn && me && (
         <div>
           <h1>
