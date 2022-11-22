@@ -403,9 +403,43 @@ export function App() {
       )}
       {loggedIn && me && (
         <div>
-          <h1>
-            {me?.display_name}, {me?.followers?.total} followers
+          <h1
+            style={{
+              background: "linear-gradient(to right, #09009f, #00ff95 20%)",
+              backgroundClip: "text",
+              webkitBackgroundClip: "text",
+              color: "transparent",
+            }}
+          >
+            Mixify
           </h1>
+          <div
+            style={{
+              border: "4px solid transparent",
+              borderRadius: "8px",
+              padding: "10px",
+              paddingLeft: "15px",
+              display: "inline-flex",
+              alignItems: "center",
+              background:
+                "linear-gradient(white, white) padding-box, linear-gradient(135deg, #09009f, #00ff95 90%) border-box",
+            }}
+          >
+            <div>
+              <img
+                style={{ borderRadius: "8px" }}
+                src={me?.images ? me?.images[0].url : ""}
+                width={"50"}
+                height={"50"}
+              />
+            </div>
+            <div style={{ paddingLeft: "10px" }}>
+              <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
+                {me?.display_name}
+              </div>
+              <div>{me?.followers?.total} followers</div>
+            </div>
+          </div>
           <h3>
             <button onClick={logout}>Logout</button>
           </h3>
@@ -419,10 +453,29 @@ export function App() {
             type="text"
             value={entry}
             size={100}
+            placeholder={
+              "https://open.spotify.com/user/snb2thpiem5yc2wf346k60hx1?si=19796645954d436b"
+            }
             //@ts-ignore
             onChange={(e) => setentry(e.target?.value)}
-          />
+            style={{
+              marginTop: "10px",
+              outlineColor: "#09009f",
+              padding: "10px",
+            }}
+          />{" "}
+          <br />
           <button
+            style={{
+              marginTop: "10px",
+              padding: "10px 20px 10px 20px",
+              backgroundColor: "#09009f",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              fontSize: "1.05rem",
+              fontWeight: "bold",
+            }}
             onClick={() => {
               const comp = entry.split("/");
               const uid = comp[comp.length - 1];
@@ -431,11 +484,6 @@ export function App() {
           >
             Mixify
           </button>
-          <br />
-          <div style={{ fontSize: "small", color: "gray" }}>
-            i.e.
-            https://open.spotify.com/user/snb2thpiem5yc2wf346k60hx1?si=19796645954d436b
-          </div>
         </div>
       )}
       {me && otheruser && (
