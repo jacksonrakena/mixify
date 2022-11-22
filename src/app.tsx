@@ -437,7 +437,8 @@ export function Authorized(props: { id: string; otheruser: string }) {
                       src={
                         //@ts-ignore
                         a.track?.album.images
-                          ? a.track?.album.images[0]?.url
+                          ? //@ts-ignore
+                            a.track?.album.images[0]?.url
                           : ""
                       }
                       height="50"
