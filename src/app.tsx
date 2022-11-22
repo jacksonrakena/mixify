@@ -149,7 +149,7 @@ export const UserContainer = (props: { id: string }) => {
       >
         <img
           style={{ borderRadius: 50 }}
-          src={user?.images ? user?.images[0].url : ""}
+          src={user?.images ? user?.images[0]?.url : ""}
           height="40"
           width="40"
         />
@@ -189,7 +189,11 @@ export const PlaylistBox = (props: { playlist: DownloadedPlaylist }) => {
         borderRadius: "10px",
       }}
     >
-      <img src={props.playlist.images[0].url} width="50" height="50" />
+      <img
+        src={props.playlist.images ? props.playlist.images[0]?.url : ""}
+        width="50"
+        height="50"
+      />
       <div
         style={{ marginLeft: "10px", display: "flex", flexDirection: "column" }}
       >
@@ -350,7 +354,7 @@ export function Authorized(props: { id: string; otheruser: string }) {
                 <img
                   src={
                     //@ts-ignore
-                    a.track?.album.images ? a.track?.album.images[0].url : ""
+                    a.track?.album.images ? a.track?.album.images[0]?.url : ""
                   }
                   height="50"
                   width="50"
