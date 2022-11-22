@@ -3,8 +3,9 @@
 import { useEffect, useState } from "preact/hooks";
 import SpotifyWebApi from "spotify-web-api-js";
 import "./app.css";
+import { useSpotifyAuth } from "./auth";
 const endpoint = "https://accounts.spotify.com/authorize";
-const redirecturi = "http://127.0.0.1:5173/";
+const redirecturi = "http://localhost:5173/";
 const clientId = "b96e260c2a344a6e86950b8c2076d052";
 const bingus = "12135528270";
 const friendId = "samlxluo";
@@ -18,29 +19,21 @@ const scopes = [
   "user-library-read",
   "user-read-recently-played",
 ];
-const spotify = new SpotifyWebApi();
-const loginurl = `${endpoint}?client_id=${clientId}&redirect_uri=${redirecturi}&scope=${scopes.join(
-  "%20"
-)}&response_type=token&show_dialog=true`;
-
-const getToken = () => {
-  return window.location.hash
-    .substring(1)
-    .split("&")
-    .reduce((initial, item) => {
-      let parts = item.split("=");
-      initial[parts[0]] = decodeURIComponent(parts[1]);
-      return initial;
-    }, {});
+const spotifyConfig = {
+  scopes: scopes,
+  clientId: clientId,
+  redirectUri: redirecturi,
 };
 
 export async function greed<T>(
+  client: SpotifyWebApi.SpotifyWebApiJs,
   pager: SpotifyApi.PagingObject<T>
 ): Promise<T[]> {
   return pager.items.concat(
     pager.next
       ? await greed<T>(
-          (await spotify.getGeneric(pager.next)) as SpotifyApi.PagingObject<T>
+          client,
+          (await client.getGeneric(pager.next)) as SpotifyApi.PagingObject<T>
         )
       : ([] as T[])
   );
@@ -53,6 +46,7 @@ type DownloadedPlaylist = SpotifyApi.PlaylistObjectSimplified & {
 };
 
 export function useDownloadedUser(id: string) {
+  const { client } = useSpotifyAuth(spotifyConfig);
   const [user, setUser] = useState<SpotifyApi.UserObjectPublic>();
   const [playlists, setPlaylists] = useState<DownloadedPlaylist[]>([]);
   const [numberOfTotalTracks, setTotalNumber] = useState(-1);
@@ -60,10 +54,10 @@ export function useDownloadedUser(id: string) {
   useEffect(() => {
     (async () => {
       if (!user) {
-        const u = await spotify.getUser(id);
+        const u = await client.getUser(id);
         setUser(u);
         const playlists = await (
-          await greed(await spotify.getUserPlaylists(id))
+          await greed(client, await client.getUserPlaylists(id))
         ).filter((d) => !d.collaborative && d.id !== "4swvYTF3ykCXM5pfmTnP5h");
         setPlaylists(
           playlists.map((p) => {
@@ -106,7 +100,8 @@ export function useDownloadedUser(id: string) {
             setComplete((c) => c + tracks.length);
           } else {
             const tracks = await greed(
-              await spotify.getPlaylistTracks(playlist.id)
+              client,
+              await client.getPlaylistTracks(playlist.id)
             );
             setPlaylists((state) =>
               state.map((p) => {
@@ -209,9 +204,10 @@ export function useDownloadedPlaylist(id: string) {
   const [tracks, setTracks] = useState<SpotifyApi.PlaylistTrackObject[]>(
     [] as any
   );
+  const { client } = useSpotifyAuth(spotifyConfig);
   useEffect(() => {
     (async () => {
-      const dtracks = await greed(await spotify.getPlaylistTracks(id));
+      const dtracks = await greed(client, await client.getPlaylistTracks(id));
       setTracks(dtracks);
     })();
   }, [id]);
@@ -220,11 +216,9 @@ export function useDownloadedPlaylist(id: string) {
 
 export function Analysis2() {}
 
-export function Authorized() {
-  //const me = useDownloadedUser("snb2thpiem5yc2wf346k60hx1");
-  //const other = useDownloadedUser(friendIdx);
-  const user0 = useDownloadedUser("snb2thpiem5yc2wf346k60hx1");
-  const other0 = useDownloadedUser(bingus);
+export function Authorized(props: { id: string; otheruser: string }) {
+  const user0 = useDownloadedUser(props.id);
+  const other0 = useDownloadedUser(props.otheruser);
   const [analysis, setAnalysis] = useState<
     {
       track: SpotifyApi.TrackObjectSimplified;
@@ -367,42 +361,60 @@ export function Authorized() {
   );
 }
 export function App() {
-  const [count, setCount] = useState(0);
-  const [token, setToken] = useState(null);
-  const [playlists, setPlaylists] = useState<
-    SpotifyApi.PlaylistObjectSimplified[]
-  >([]);
-  const [friendPlaylists, setFp] = useState<
-    SpotifyApi.PlaylistObjectSimplified[]
-  >([]);
+  const { logout, client, loggedIn, login } = useSpotifyAuth(spotifyConfig);
   const [me, setMe] = useState<SpotifyApi.CurrentUsersProfileResponse | null>(
     null
   );
+  const [otheruser, setotheruser] = useState("");
+  const [entry, setentry] = useState("");
   useEffect(() => {
-    if (!token?.access_token) {
-      const token = getToken();
-      console.log(token);
-      if (token?.access_token) {
-        setToken(token?.access_token);
-        spotify.setAccessToken(token.access_token);
-        spotify.getMe().then((d) => {
-          setMe(d);
-        });
-      }
+    if (loggedIn) {
+      client.getMe().then((d) => {
+        console.log("acquired me", d);
+        setMe(d);
+      });
     }
-  }, []);
+  }, [loggedIn]);
 
   return (
     <>
-      <h1>{token && "logged in "}</h1>
-      <div class="card">
-        {!token && <a href={loginurl}>Login</a>}
-        {token && <Authorized />}
-        <div style={{ display: "flex", flex: "1", flexDirection: "row" }}>
-          {/* {me && <UserContainer id={me.id} />}
-          {<UserContainer id={friendIdx} />} */}
+      {loggedIn && me && (
+        <div>
+          <h1>
+            {me?.display_name}, {me?.followers?.total} followers
+          </h1>
+          <h3>
+            <button onClick={logout}>Logout</button>
+          </h3>
         </div>
-      </div>
+      )}
+      {me && !otheruser && (
+        <div>
+          Paste the Spotify profile link for a friend you'd like to Mixify with:
+          <br />
+          <input
+            type="text"
+            value={entry}
+            size={100}
+            //@ts-ignore
+            onChange={(e) => setentry(e.target?.value)}
+          />
+          <button
+            onClick={() => {
+              const comp = entry.split("/");
+              const uid = comp[comp.length - 1];
+              setotheruser(uid.split("?")[0]);
+            }}
+          >
+            Mixify
+          </button>
+        </div>
+      )}
+      {me && otheruser && (
+        <>
+          <Authorized id={me.id} otheruser={otheruser} />
+        </>
+      )}
     </>
   );
 }
