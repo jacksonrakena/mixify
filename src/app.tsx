@@ -291,13 +291,79 @@ export function Authorized(props: { id: string; otheruser: string }) {
   }, [user0, other0]);
 
   return (
-    <>
-      <div>
+    <div style={{ marginTop: "30px" }}>
+      <div style={{ marginBottom: "30px" }}>
         {user0.state} - {other0.state}
       </div>
       {analysis.length > 0 && (
         <div>
-          <div style={{ marginBottom: "10px" }}>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <div
+              style={{
+                border: "4px solid transparent",
+                borderRadius: "8px",
+                padding: "10px",
+                paddingLeft: "15px",
+                display: "inline-flex",
+                alignItems: "center",
+                background:
+                  "linear-gradient(white, white) padding-box, linear-gradient(135deg, #09009f, #00ff95 90%) border-box",
+              }}
+            >
+              <div>
+                <img
+                  style={{ borderRadius: "8px" }}
+                  src={user0?.user?.images ? user0?.user?.images[0]?.url : ""}
+                  width={"50"}
+                  height={"50"}
+                />
+              </div>
+              <div style={{ paddingLeft: "10px" }}>
+                <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
+                  {user0?.user?.display_name}
+                </div>
+                <div>{user0?.user?.followers?.total} followers</div>
+              </div>
+            </div>
+            <div
+              style={{
+                marginLeft: "20px",
+                fontSize: "1.6rem",
+                fontWeight: "bold",
+              }}
+            >
+              X
+            </div>
+            <div
+              style={{
+                border: "4px solid transparent",
+                borderRadius: "8px",
+                padding: "10px",
+                marginLeft: "20px",
+                paddingLeft: "15px",
+                display: "inline-flex",
+                alignItems: "center",
+                background:
+                  "linear-gradient(white, white) padding-box, linear-gradient(135deg, #09009f, #00ff95 90%) border-box",
+              }}
+            >
+              <div>
+                <img
+                  style={{ borderRadius: "8px" }}
+                  src={other0?.user?.images ? other0?.user?.images[0]?.url : ""}
+                  width={"50"}
+                  height={"50"}
+                />
+              </div>
+              <div style={{ paddingLeft: "10px" }}>
+                <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
+                  {other0?.user?.display_name}
+                </div>
+                <div>{other0?.user?.followers?.total} followers</div>
+              </div>
+            </div>
+          </div>
+          <div style={{ marginTop: "30px", marginBottom: "10px" }}>
             <div>
               <strong>{user0.user?.display_name}</strong> shares{" "}
               {(
@@ -374,7 +440,7 @@ export function Authorized(props: { id: string; otheruser: string }) {
           );
         })}
       </div>
-    </>
+    </div>
   );
 }
 export function App() {
@@ -442,7 +508,7 @@ export function App() {
           </div>
         </div>
       )}
-      {me && !otheruser && (
+      {me && (
         <div style={{ marginTop: "25px" }}>
           Paste the Spotify profile link for a friend you'd like to Mixify with:
           <br />
@@ -476,7 +542,8 @@ export function App() {
             onClick={() => {
               const comp = entry.split("/");
               const uid = comp[comp.length - 1];
-              setotheruser(uid.split("?")[0]);
+              setotheruser("");
+              setTimeout(() => setotheruser(uid.split("?")[0]), 300);
             }}
           >
             Mixify
@@ -500,9 +567,9 @@ export function App() {
         </div>
       )}
       {me && otheruser && (
-        <>
+        <div style={{ marginTop: "30px" }}>
           <Authorized id={me.id} otheruser={otheruser} />
-        </>
+        </div>
       )}
     </>
   );
