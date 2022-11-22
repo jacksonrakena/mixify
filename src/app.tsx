@@ -229,6 +229,9 @@ export function Analysis2() {}
 export function Authorized(props: { id: string; otheruser: string }) {
   const user0 = useDownloadedUser(props.id);
   const other0 = useDownloadedUser(props.otheruser);
+  const [analysisState, setAnalysisState] = useState<
+    "Not started" | "Analysing" | "Completed"
+  >("Not started");
   const [analysis, setAnalysis] = useState<
     {
       track: SpotifyApi.TrackObjectSimplified;
@@ -292,154 +295,192 @@ export function Authorized(props: { id: string; otheruser: string }) {
 
   return (
     <div style={{ marginTop: "30px" }}>
-      <div style={{ marginBottom: "30px" }}>
-        {user0.state} - {other0.state}
-      </div>
-      {analysis.length > 0 && (
-        <div>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <div
-              style={{
-                border: "4px solid transparent",
-                borderRadius: "8px",
-                padding: "10px",
-                paddingLeft: "15px",
-                display: "inline-flex",
-                alignItems: "center",
-                background:
-                  "linear-gradient(white, white) padding-box, linear-gradient(135deg, #09009f, #00ff95 90%) border-box",
-              }}
-            >
-              <div>
-                <img
-                  style={{ borderRadius: "8px" }}
-                  src={user0?.user?.images ? user0?.user?.images[0]?.url : ""}
-                  width={"50"}
-                  height={"50"}
-                />
-              </div>
-              <div style={{ paddingLeft: "10px" }}>
-                <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
-                  {user0?.user?.display_name}
-                </div>
-                <div>{user0?.user?.followers?.total} followers</div>
-              </div>
-            </div>
-            <div
-              style={{
-                marginLeft: "20px",
-                fontSize: "1.6rem",
-                fontWeight: "bold",
-              }}
-            >
-              X
-            </div>
-            <div
-              style={{
-                border: "4px solid transparent",
-                borderRadius: "8px",
-                padding: "10px",
-                marginLeft: "20px",
-                paddingLeft: "15px",
-                display: "inline-flex",
-                alignItems: "center",
-                background:
-                  "linear-gradient(white, white) padding-box, linear-gradient(135deg, #09009f, #00ff95 90%) border-box",
-              }}
-            >
-              <div>
-                <img
-                  style={{ borderRadius: "8px" }}
-                  src={other0?.user?.images ? other0?.user?.images[0]?.url : ""}
-                  width={"50"}
-                  height={"50"}
-                />
-              </div>
-              <div style={{ paddingLeft: "10px" }}>
-                <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
-                  {other0?.user?.display_name}
-                </div>
-                <div>{other0?.user?.followers?.total} followers</div>
-              </div>
-            </div>
-          </div>
-          <div style={{ marginTop: "30px", marginBottom: "10px" }}>
-            <div>
-              <strong>{user0.user?.display_name}</strong> shares{" "}
-              {(
-                (analysis.length /
-                  user0.playlists.reduce(
-                    (a, b) => a + b.downloadedTracks.length,
-                    0
-                  )) *
-                100
-              ).toFixed(2)}
-              % of their library with{" "}
-              <strong>{other0.user?.display_name}</strong>
-            </div>
-            <div>
-              <strong>{other0.user?.display_name}</strong> shares{" "}
-              {(
-                (analysis.length /
-                  other0.playlists.reduce(
-                    (a, b) => a + b.downloadedTracks.length,
-                    0
-                  )) *
-                100
-              ).toFixed(2)}
-              % of their library with{" "}
-              <strong>{user0.user?.display_name}</strong>
-            </div>
-          </div>
-          <div style={{ marginBottom: "10px" }}>
-            The top shared artists between these two users are:
-            <div>
-              {topSharedArtists.slice(0, 5).map((d) => (
-                <div>
-                  {d.artist.name} ({d.count} shared songs)
-                </div>
-              ))}
-            </div>
-          </div>
+      {(user0.state !== "completed" || other0.state !== "completed") && (
+        <div style={{ marginBottom: "30px" }}>
+          {user0.state} - {other0.state}
         </div>
       )}
-      <div>
-        {analysis.map((a) => {
-          return (
-            <div
-              key={a.track?.id + a.playlist0.id + a.playlist1.id}
-              style={{
-                border: "1px solid black",
-                padding: "15px",
-                borderRadius: "25px",
-                marginBottom: "10px",
-                display: "flex",
-              }}
-            >
-              <div>
-                <img
-                  src={
-                    //@ts-ignore
-                    a.track?.album.images ? a.track?.album.images[0]?.url : ""
-                  }
-                  height="50"
-                  width="50"
-                />
-              </div>
-              <div style={{ marginLeft: "10px" }}>
+      {analysis.length > 0 && (
+        <>
+          <div>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <div
+                style={{
+                  border: "4px solid transparent",
+                  borderRadius: "8px",
+                  padding: "10px",
+                  paddingLeft: "15px",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  background:
+                    "linear-gradient(white, white) padding-box, linear-gradient(135deg, #09009f, #00ff95 90%) border-box",
+                }}
+              >
                 <div>
-                  {a.track?.name}, by {a.track?.artists[0].name}
+                  <img
+                    style={{ borderRadius: "8px" }}
+                    src={user0?.user?.images ? user0?.user?.images[0]?.url : ""}
+                    width={"50"}
+                    height={"50"}
+                  />
                 </div>
-                <div style={{ marginLeft: "15px" }}>
-                  Your playlist: {a.playlist0.name} &bull; Their playlist:{" "}
-                  {a.playlist1.name} <br />
-                  {(a as any).track?.album.name}
+                <div style={{ paddingLeft: "10px" }}>
+                  <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
+                    {user0?.user?.display_name}
+                  </div>
+                  <div>{user0?.user?.followers?.total} followers</div>
+                </div>
+              </div>
+              <div
+                style={{
+                  marginLeft: "20px",
+                  fontSize: "1.6rem",
+                  fontWeight: "bold",
+                }}
+              >
+                X
+              </div>
+              <div
+                style={{
+                  border: "4px solid transparent",
+                  borderRadius: "8px",
+                  padding: "10px",
+                  marginLeft: "20px",
+                  paddingLeft: "15px",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  background:
+                    "linear-gradient(white, white) padding-box, linear-gradient(135deg, #09009f, #00ff95 90%) border-box",
+                }}
+              >
+                <div>
+                  <img
+                    style={{ borderRadius: "8px" }}
+                    src={
+                      other0?.user?.images ? other0?.user?.images[0]?.url : ""
+                    }
+                    width={"50"}
+                    height={"50"}
+                  />
+                </div>
+                <div style={{ paddingLeft: "10px" }}>
+                  <div style={{ fontWeight: "bold", fontSize: "1.2rem" }}>
+                    {other0?.user?.display_name}
+                  </div>
+                  <div>{other0?.user?.followers?.total} followers</div>
                 </div>
               </div>
             </div>
-          );
-        })}
-      </div>
+            <div style={{ marginTop: "30px", marginBottom: "10px" }}>
+              <div>
+                You share <b>{analysis.length} songs</b> and{" "}
+                <b>{topSharedArtists.length} artists</b>.
+              </div>
+              <div>
+                <strong>{user0.user?.display_name}</strong> shares{" "}
+                {(
+                  (analysis.length /
+                    user0.playlists.reduce(
+                      (a, b) => a + b.downloadedTracks.length,
+                      0
+                    )) *
+                  100
+                ).toFixed(2)}
+                % of their library with{" "}
+                <strong>{other0.user?.display_name}</strong>
+              </div>
+              <div>
+                <strong>{other0.user?.display_name}</strong> shares{" "}
+                {(
+                  (analysis.length /
+                    other0.playlists.reduce(
+                      (a, b) => a + b.downloadedTracks.length,
+                      0
+                    )) *
+                  100
+                ).toFixed(2)}
+                % of their library with{" "}
+                <strong>{user0.user?.display_name}</strong>
+              </div>
+            </div>
+            <div style={{ marginBottom: "10px" }}>
+              <h4>YOUR TOP ARTISTS</h4>
+              <div>
+                {topSharedArtists.slice(0, 5).map((d) => (
+                  <div style={{ display: "flex" }}>
+                    <div></div>
+                    <div>
+                      {d.artist.name} ({d.count} shared songs)
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div>
+            <h4>YOUR SHARED SONGS</h4>
+            {analysis.map((a) => {
+              return (
+                <div
+                  key={a.track?.id + a.playlist0.id + a.playlist1.id}
+                  style={{
+                    border: "0px solid black",
+                    padding: "15px",
+                    borderRadius: "25px",
+                    marginBottom: "10px",
+                    display: "flex",
+                  }}
+                >
+                  <div>
+                    <img
+                      style={{ borderRadius: "8px" }}
+                      src={
+                        //@ts-ignore
+                        a.track?.album.images
+                          ? a.track?.album.images[0]?.url
+                          : ""
+                      }
+                      height="50"
+                      width="50"
+                    />
+                  </div>
+                  <div
+                    style={{
+                      width: "100%",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      marginLeft: "10px",
+                    }}
+                  >
+                    <div>
+                      <div>
+                        <span style={{ fontWeight: "bold" }}>
+                          {a.track?.name}
+                        </span>
+                        , by {a.track?.artists[0]?.name}
+                      </div>
+                      <div>
+                        {" "}
+                        <b>Album:</b> {(a as any).track?.album.name}
+                      </div>
+                    </div>
+                    <div>
+                      <div>
+                        <b>{user0?.user?.display_name}</b>'s{" "}
+                        <i>{a.playlist0.name}</i>
+                      </div>
+                      <div>
+                        <b>{other0?.user?.display_name}</b>'s{" "}
+                        <i>{a.playlist1.name}</i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
     </div>
   );
 }
