@@ -416,6 +416,10 @@ export function App() {
           >
             Mixify
           </button>
+          <br />
+          <div style={{ fontSize: "small", color: "gray" }}>
+            i.e. https://open.spotify.com/user/12135528270?si=23b0a740756a471b
+          </div>
         </div>
       )}
       {me && otheruser && (
