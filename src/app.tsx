@@ -59,7 +59,12 @@ export function useDownloadedUser(id: string) {
         setUser(u);
         const playlists = await (
           await greed(client, await client.getUserPlaylists(id))
-        ).filter((d) => !d.collaborative && d.id !== "4swvYTF3ykCXM5pfmTnP5h");
+        ).filter(
+          (d) =>
+            !d.collaborative &&
+            d.id !== "4swvYTF3ykCXM5pfmTnP5h" &&
+            !d.name.includes("Top Songs")
+        );
         setPlaylists(
           playlists.map((p) => {
             return {
@@ -291,23 +296,27 @@ export function Authorized(props: { id: string; otheruser: string }) {
           <div style={{ marginBottom: "10px" }}>
             <div>
               <strong>{user0.user?.display_name}</strong> shares{" "}
-              {(analysis.length /
-                user0.playlists.reduce(
-                  (a, b) => a + b.downloadedTracks.length,
-                  0
-                )) *
-                100}
+              {(
+                (analysis.length /
+                  user0.playlists.reduce(
+                    (a, b) => a + b.downloadedTracks.length,
+                    0
+                  )) *
+                100
+              ).toFixed(2)}
               % of their library with{" "}
               <strong>{other0.user?.display_name}</strong>
             </div>
             <div>
               <strong>{other0.user?.display_name}</strong> shares{" "}
-              {(analysis.length /
-                other0.playlists.reduce(
-                  (a, b) => a + b.downloadedTracks.length,
-                  0
-                )) *
-                100}
+              {(
+                (analysis.length /
+                  other0.playlists.reduce(
+                    (a, b) => a + b.downloadedTracks.length,
+                    0
+                  )) *
+                100
+              ).toFixed(2)}
               % of their library with{" "}
               <strong>{user0.user?.display_name}</strong>
             </div>
@@ -420,7 +429,8 @@ export function App() {
           </button>
           <br />
           <div style={{ fontSize: "small", color: "gray" }}>
-            i.e. https://open.spotify.com/user/12135528270?si=23b0a740756a471b
+            i.e.
+            https://open.spotify.com/user/snb2thpiem5yc2wf346k60hx1?si=19796645954d436b
           </div>
         </div>
       )}
