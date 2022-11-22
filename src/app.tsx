@@ -144,7 +144,7 @@ export const UserContainer = (props: { id: string }) => {
       >
         <img
           style={{ borderRadius: 50 }}
-          src={user?.images![0].url}
+          src={user?.images ? user?.images[0].url : ""}
           height="40"
           width="40"
         />
@@ -340,7 +340,9 @@ export function Authorized(props: { id: string; otheruser: string }) {
               <div>
                 <img
                   //@ts-ignore
-                  src={a.track?.album.images[0].url}
+                  src={
+                    a.track?.album.images ? a.track?.album.images[0].url : ""
+                  }
                   height="50"
                   width="50"
                 />
