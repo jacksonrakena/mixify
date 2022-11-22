@@ -440,13 +440,10 @@ export function App() {
               <div>{me?.followers?.total} followers</div>
             </div>
           </div>
-          <h3>
-            <button onClick={logout}>Logout</button>
-          </h3>
         </div>
       )}
       {me && !otheruser && (
-        <div>
+        <div style={{ marginTop: "25px" }}>
           Paste the Spotify profile link for a friend you'd like to Mixify with:
           <br />
           <input
@@ -483,6 +480,22 @@ export function App() {
             }}
           >
             Mixify
+          </button>
+          <button
+            style={{
+              marginLeft: "15px",
+              marginTop: "10px",
+              padding: "10px 20px 10px 20px",
+              backgroundColor: "red",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              fontSize: "1.05rem",
+              fontWeight: "bold",
+            }}
+            onClick={logout}
+          >
+            Logout
           </button>
         </div>
       )}
