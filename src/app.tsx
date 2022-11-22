@@ -253,8 +253,9 @@ export function Authorized(props: { id: string; otheruser: string }) {
         for (const otherPlaylist of other0.playlists) {
           for (const track of playlist.downloadedTracks) {
             if (
+              track?.track.id &&
               otherPlaylist.downloadedTracks.find(
-                (o) => o.track?.id === track.track?.id
+                (o) => o.track?.id && o.track?.id === track.track?.id
               )
             ) {
               const t = track.track as SpotifyApi.TrackObjectSimplified;
