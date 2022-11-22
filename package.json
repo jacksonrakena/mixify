@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@types/spotify-api": "^0.0.19",
     "preact": "^10.11.2",
     "spotify-web-api-js": "^1.5.2"
   },
