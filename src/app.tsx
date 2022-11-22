@@ -388,8 +388,6 @@ export function App() {
     if (loggedIn) {
       client.getMe().then((d) => {
         console.log("acquired me", d);
-
-        d.fo;
         setMe(d);
       });
     }
